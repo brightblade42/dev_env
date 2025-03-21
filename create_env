@@ -1,0 +1,13 @@
+#!/bin/bash
+
+
+if command -v distrobox >/dev/null 2>&1; then
+   echo "distrobox is installed.."
+else
+   echo "installing distrobox.."
+   ./dbox
+fi
+
+chome="/home/eyemetric/container_home/$1"
+distrobox create --image docker.io/eyemetricfr/dev_base:1.0 --name $1 --home $chome --nvidia
+
