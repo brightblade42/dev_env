@@ -2,7 +2,7 @@
 
 #copy our built in defaults to our real home directory
 
-sudo chown -R eyemetric /opt
+sudo chown -R $(whoami) /opt
 cp -R /opt/home/.ssh ~
 cp -R /opt/home/.config ~
 cp /opt/home/.bashrc ~
