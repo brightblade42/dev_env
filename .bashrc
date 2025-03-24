@@ -17,6 +17,7 @@ export XDG_DATA_HOME="/opt/home/.local/share"
 export XDG_CONFIG_HOME="/opt/home/.config" 
 export TERM=xterm-256color
 
+eval "$(zoxide init bash)"
 #for gh cli github authentication
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_ed25519
