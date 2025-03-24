@@ -64,5 +64,5 @@ RUN dnf install yazy -y
 # Copy configuration files
 COPY ./.bashrc /opt/home/.bashrc
 COPY ./ssh /opt/home/.ssh
-COPY ./.local/share /opt/home/.local/share
+COPY ./local/share /opt/home/.local/share
 #copy preinstalled neovim plugins. 
