@@ -60,7 +60,7 @@ RUN dnf copr enable -y aquacash5/nerd-fonts
 RUN dnf install -y fira-code-nerd-fonts
 
 RUN dnf copr enable -y varlad/yazi 
-RUN dnf install yazy -y
+RUN dnf install yazi -y
 # Copy configuration files
 COPY ./.bashrc /opt/home/.bashrc
 COPY ./ssh /opt/home/.ssh
