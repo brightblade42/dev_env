@@ -1,0 +1,67 @@
+#!/bin/bash
+# ~/dotfiles/setup-dev-env.sh
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="~/dotfiles"
+
+source "$SCRIPT_DIR/lib/common.sh"
+
+echo "======================================"
+echo "  Dev Environment Setup"
+echo "======================================"
+echo ""
+
+# Git configuration
+log_section "Checking git configuration..."
+if ! git config --global user.name > /dev/null 2>&1; then
+    log_warn "Git not configured"
+    read -p "Enter your name: " git_name
+    read -p "Enter your email: " git_email
+    git config --global user.name "$git_name"
+    git config --global user.email "$git_email"
+    log_info "Git configured"
+else
+    log_info "Git already configured as: $(git config --global user.name)"
+fi
+
+# Initial file copy (before mutagen)
+log_section "Copying initial dotfiles..."
+[[ -f "$DOTFILES_DIR/shell/.bashrc" ]] && cp -f "$DOTFILES_DIR/shell/.bashrc" ~/.bashrc
+[[ -f "$DOTFILES_DIR/shell/.zshrc" ]] && cp -f "$DOTFILES_DIR/shell/.zshrc" ~/.zshrc
+log_info "Initial files copied"
+
+# Setup Mutagen
+"$SCRIPT_DIR/bin/setup-mutagen-sync"
+
+# Language runtimes
+echo ""
+read -p "Install languages? (1=Essential, 2=All, 3=Skip) [1]: " lang_choice
+lang_choice=${lang_choice:-1}
+
+case $lang_choice in
+    1) "$SCRIPT_DIR/bin/install-languages" essential ;;
+    2) "$SCRIPT_DIR/bin/install-languages" all ;;
+    3) log_info "Skipping language installation" ;;
+esac
+
+# Doom Emacs
+echo ""
+read -p "Install Doom Emacs? (y/N): " install_doom
+if [[ "$install_doom" =~ ^[Yy]$ ]]; then
+    "$SCRIPT_DIR/bin/install-doom"
+fi
+
+touch ~/.setup-complete
+
+echo ""
+echo "======================================"
+echo "  Setup Complete!"
+echo "======================================"
+echo ""
+log_info "Useful commands:"
+echo "  install-languages [essential|all]  - Install language runtimes"
+echo "  install-doom                        - Install Doom Emacs"
+echo "  setup-mutagen-sync                  - Setup file syncing"
+echo "  update-dotfiles                     - Commit and push changes"
+echo ""

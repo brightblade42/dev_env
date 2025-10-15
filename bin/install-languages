@@ -1,0 +1,44 @@
+#!/bin/bash
+
+set -e
+
+# Source common functions
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../lib/common.sh"
+
+#check mise
+if ! has_command mise; then
+	log_error "mise is not installed"
+	exit 1
+fi
+
+# Parse arguments
+PROFILE="${1:-essential}"
+
+case "$PROFILE" in
+    essential)
+        log_section "Installing essential languages..."
+        mise use --global node@lts
+        mise use --global rust@stable
+        mise use --global go@latest
+        ;;
+    
+    all)
+        log_section "Installing all languages..."
+        mise use --global node@lts
+        mise use --global rust@stable
+        mise use --global go@latest
+        mise use --global deno@latest
+        mise use --global bun@latest
+        ;;
+    
+    *)
+        log_error "Unknown profile: $PROFILE"
+        echo "Usage: $0 [essential|all]"
+        exit 1
+        ;;
+esac
+
+log_info "Languages installed successfully"
+mise list
+

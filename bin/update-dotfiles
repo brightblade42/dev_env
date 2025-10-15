@@ -1,0 +1,40 @@
+#!/bin/bash
+# ~/dotfiles/bin/update-dotfiles
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../lib/common.sh"
+
+DOTFILES_DIR="$HOME/dotfiles"
+
+log_section "Updating dotfiles repository..."
+
+cd "$DOTFILES_DIR"
+
+# Check for changes
+if ! git status --short | grep -q '^'; then
+    log_info "No changes to commit"
+    exit 0
+fi
+
+log_info "Changed files:"
+git status --short
+
+echo ""
+read -p "Commit changes? (y/N): " commit
+if [[ ! "$commit" =~ ^[Yy]$ ]]; then
+    log_info "Skipping commit"
+    exit 0
+fi
+
+read -p "Commit message: " msg
+git add .
+git commit -m "$msg"
+
+log_info "✓ Committed changes"
+
+read -p "Push to remote? (y/N): " push
+if [[ "$push" =~ ^[Yy]$ ]]; then
+    git push
+    log_info "✓ Pushed to remote"
+fi

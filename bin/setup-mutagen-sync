@@ -1,0 +1,70 @@
+#!/bin/bash
+# ~/dotfiles/bin/setup-mutagen-sync
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../lib/common.sh"
+
+DOTFILES_DIR="$HOME/dotfiles"
+
+log_section "Setting up Mutagen sync sessions..."
+
+# Check mutagen is installed
+if ! has_command mutagen; then
+    log_error "Mutagen is not installed"
+    exit 1
+fi
+
+# Function to create sync session
+create_sync() {
+    local name=$1
+    local src=$2
+    local dst=$3
+    
+    # Check if session already exists
+    if mutagen sync list "$name" &> /dev/null; then
+        log_warn "Sync session '$name' already exists"
+        return
+    fi
+    
+    log_info "Creating sync: $name"
+    mutagen sync create \
+        "$src" \
+        "$dst" \
+        --name="$name" \
+        --sync-mode=two-way-resolved \
+        --ignore=".git" \
+        --ignore="*.swp" \
+        --ignore="*~"
+}
+
+# Create sync sessions
+create_sync "dotfiles-bashrc" \
+    "$DOTFILES_DIR/shell/.bashrc" \
+    "$HOME/.bashrc"
+
+create_sync "dotfiles-zshrc" \
+    "$DOTFILES_DIR/shell/.zshrc" \
+    "$HOME/.zshrc"
+
+create_sync "dotfiles-gitconfig" \
+    "$DOTFILES_DIR/git/.gitconfig" \
+    "$HOME/.gitconfig"
+
+create_sync "dotfiles-nvim" \
+    "$DOTFILES_DIR/nvim/" \
+    "$HOME/.config/nvim/"
+
+create_sync "dotfiles-helix" \
+    "$DOTFILES_DIR/helix/" \
+    "$HOME/.config/helix/"
+
+if [[ -d "$DOTFILES_DIR/doom" ]]; then
+    create_sync "dotfiles-doom" \
+        "$DOTFILES_DIR/doom/" \
+        "$HOME/.config/doom/"
+fi
+
+log_info "✓ Mutagen sync sessions created"
+echo ""
+echo "Check status: mutagen sync list"

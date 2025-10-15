@@ -1,0 +1,54 @@
+#!/bin/bash
+# ~/dotfiles/bin/install-doom
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../lib/common.sh"
+
+#DOTFILES_DIR=$(get_dotfiles_dir)
+DOTFILES_DIR="$HOME/dotfiles"
+
+log_section "Installing Doom Emacs..."
+
+# Check if already installed
+if [[ -d ~/.config/emacs ]]; then
+    log_warn "Doom Emacs already installed at ~/.config/emacs"
+    read -p "Reinstall? (y/N): " reinstall
+    if [[ ! "$reinstall" =~ ^[Yy]$ ]]; then
+        exit 0
+    fi
+    rm -rf ~/.config/emacs
+fi
+
+# Check git config
+if ! git config --global user.name > /dev/null 2>&1; then
+    log_error "Git not configured. Please set up git first:"
+    echo "  git config --global user.name 'Your Name'"
+    echo "  git config --global user.email 'your@email.com'"
+    exit 1
+fi
+
+# Clone and install
+log_info "Cloning Doom Emacs..."
+git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
+
+log_info "Running Doom installer..."
+~/.config/emacs/bin/doom install
+
+# Copy config
+if [[ -d "$DOTFILES_DIR/doom" ]]; then
+    log_info "Copying your Doom config..."
+    mkdir -p ~/.config/doom
+    cp -rf "$DOTFILES_DIR/doom/"* ~/.config/doom/
+fi
+
+# Add to PATH
+if ! grep -q "doom" ~/.bashrc; then
+    echo 'export PATH="$HOME/.config/emacs/bin:$PATH"' >> ~/.bashrc
+fi
+
+log_info "✓ Doom Emacs installed successfully"
+echo ""
+echo "Next steps:"
+echo "  1. source ~/.bashrc"
+echo "  2. doom sync"
