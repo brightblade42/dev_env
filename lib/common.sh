@@ -9,7 +9,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 log_info() {
-	echo -e "{GREEN}[INFO]${NC} $*"
+	echo -e "${GREEN}[INFO]${NC} $*"
 }
 
 log_warn() {

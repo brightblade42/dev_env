@@ -125,8 +125,6 @@ alias ....='cd ../../..'
 # Terminal multiplexers
 alias zj='zellij'
 
-EOF
-
 # Set environment variables
 ENV EDITOR=nvim
 ENV VISUAL=nvim
