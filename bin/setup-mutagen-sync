@@ -59,6 +59,10 @@ create_sync "dotfiles-helix" \
     "$DOTFILES_DIR/helix/" \
     "$HOME/.config/helix/"
 
+create_sync "dotfiles-kde" \
+    "$DOTFILES_DIR/kde/kglobalshortcutsrc" \
+    "$HOME/.config/kglobalshorcutsrc"
+
 if [[ -d "$DOTFILES_DIR/doom" ]]; then
     create_sync "dotfiles-doom" \
         "$DOTFILES_DIR/doom/" \
